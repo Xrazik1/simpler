@@ -1,4 +1,5 @@
 require_relative 'view'
+require_relative 'renderer/main_renderer'
 
 module Simpler
   class Controller
@@ -11,7 +12,7 @@ module Simpler
       @response = Rack::Response.new
     end
 
-    def make_response(action)
+    def make_response(action, parameters)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
       @request.env['simpler.specific_body'] = nil
