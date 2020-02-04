@@ -32,9 +32,10 @@ module Simpler
       return make_error(404, 'Route was not found') if route.nil?
 
       controller = route.controller.new(env)
-      action = route.action
+      parameters = route.parameters
+      action     = route.action
 
-      make_response(controller, action)
+      make_response(controller, action, parameters)
     end
 
     private

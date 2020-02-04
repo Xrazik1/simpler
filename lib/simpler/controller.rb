@@ -14,6 +14,8 @@ module Simpler
     def make_response(action)
       @request.env['simpler.controller'] = self
       @request.env['simpler.action'] = action
+      @request.env['simpler.specific_body'] = nil
+      @request.params.merge!(parameters)
 
       set_default_headers
       send(action)
@@ -33,13 +35,25 @@ module Simpler
     end
 
     def write_response
-      body = render_body
+      body = specific_body || default_body
 
       @response.write(body)
     end
 
-    def render_body
+    def default_body
       View.new(@request.env).render(binding)
+    end
+
+    def specific_body
+      @request.env['simpler.specific_body']
+    end
+
+    def render_specific(params)
+      MainRenderer.include_renderers
+      renderer = MainRenderer.new(params.keys.first, params.values.first)
+
+      @request.env['simpler.specific_body'] = renderer.render
+      headers['Content-Type'] = renderer.renderer.content_type
     end
 
     def params
@@ -47,6 +61,8 @@ module Simpler
     end
 
     def render(template)
+      return render_specific(template) if template.is_a? Hash
+
       @request.env['simpler.template'] = template
     end
 
