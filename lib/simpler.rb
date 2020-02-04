@@ -1,8 +1,8 @@
 require 'pathname'
 require_relative 'simpler/application'
+require_relative './middleware/logger'
 
 module Simpler
-
   class << self
     def application
       Application.instance
